@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Polymorphine\Cookie\ResponseHeaders;
+namespace Polymorphine\Cookie;
 
 function time()
 {

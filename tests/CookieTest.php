@@ -107,7 +107,7 @@ class CookieTest extends TestCase
         $this->assertSame($expectedHeader, $cookie->valueHeader('hash-3284682736487236'));
     }
 
-    public function testSecureAndHostNamePrefixWillSetSecureDirectiveImplicitly()
+    public function testSecureAndHostNamePrefixWillForceSecureDirective()
     {
         $cookie     = $this->cookie('__SECURE-name', ['Domain' => 'example.com', 'Path' => '/test'])->valueHeader('test');
         $headerLine = '__SECURE-name=test; Domain=example.com; Path=/test; Secure';
@@ -115,6 +115,13 @@ class CookieTest extends TestCase
 
         $cookie     = $this->cookie('__host-name')->valueHeader('test');
         $headerLine = '__host-name=test; Path=/; Secure';
+        $this->assertEquals($headerLine, $cookie);
+    }
+
+    public function testHostNamePrefixWillForceRootPathAndDomain()
+    {
+        $cookie     = $this->cookie('__Host-name', ['Domain' => 'example.com', 'Path' => '/test'])->valueHeader('test');
+        $headerLine = '__Host-name=test; Path=/; Secure';
         $this->assertEquals($headerLine, $cookie);
     }
 

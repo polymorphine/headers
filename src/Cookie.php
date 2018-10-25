@@ -17,7 +17,7 @@ use DateTime;
 class Cookie
 {
     /** @var int Five years time equivalent in seconds */
-    private const MAX_TIME = 5 * 365 * 24 * 60 * 60;
+    private const MAX_TIME = 157680000;
 
     private $name;
 
@@ -42,8 +42,8 @@ class Cookie
      * setup methods (see: protected setter methods for more info)
      *
      * Prefixed name will force following settings:
-     * __Secure- force: secure
-     * __Host-   force & lock: secure, domain (current) & path (root)
+     * __Secure- force: Secure
+     * __Host-   force: Secure, Domain (current) & Path (root)
      *
      * @param $name
      * @param array $directives
@@ -61,10 +61,7 @@ class Cookie
 
     public static function permanent($name, $directives = []): self
     {
-        unset($directives['Expires']);
-        $directives['MaxAge'] = self::MAX_TIME;
-
-        return new self($name, $directives);
+        return new self($name, ['Expires' => null, 'MaxAge' => self::MAX_TIME] + $directives);
     }
 
     /**
@@ -217,5 +214,10 @@ class Cookie
         $host   = !$secure && (stripos($this->name, '__Host-') === 0);
 
         $this->directives['Secure'] = $secure || $host;
+
+        if ($host) {
+            $this->directives['Domain'] = null;
+            $this->directives['Path']   = '/';
+        }
     }
 }

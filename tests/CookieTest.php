@@ -46,10 +46,13 @@ class CookieTest extends TestCase
      */
     public function testNameChange(string $expectedHeader, array $data)
     {
-        $name   = $data['name'];
-        $cookie = $this->cookie($name, $data)->withName('new-' . $name);
+        $name      = $data['name'];
+        $oldCookie = $this->cookie($name, $data);
+        $newCookie = $oldCookie->withName('new-' . $name);
 
-        $header = $data['value'] ? $cookie->valueHeader($data['value']) : $cookie->revokeHeader();
+        $this->assertNotSame($oldCookie, $newCookie);
+
+        $header = $data['value'] ? $newCookie->valueHeader($data['value']) : $newCookie->revokeHeader();
         $this->assertEquals('new-' . $expectedHeader, $header);
     }
 
@@ -83,6 +86,14 @@ class CookieTest extends TestCase
         ];
     }
 
+    public function testGivenSameName_WithNameMethod_ReturnsSameInstance()
+    {
+        $oldCookie = $this->cookie('name');
+        $newCookie = $oldCookie->withName('name');
+
+        $this->assertSame($oldCookie, $newCookie);
+    }
+
     public function testPermanentConstructor()
     {
         $expectedHeader = 'permanentCookie=hash-3284682736487236; Path=/; Expires=Sunday, 30-Apr-2023 00:00:00 UTC; MaxAge=157680000; HttpOnly; SameSite=Strict';
@@ -98,11 +109,11 @@ class CookieTest extends TestCase
 
     public function testSecureAndHostNamePrefixWillSetSecureDirectiveImplicitly()
     {
-        $cookie = $this->cookie('__SECURE-name', ['Domain' => 'example.com', 'Path' => '/test'])->valueHeader('test');
+        $cookie     = $this->cookie('__SECURE-name', ['Domain' => 'example.com', 'Path' => '/test'])->valueHeader('test');
         $headerLine = '__SECURE-name=test; Domain=example.com; Path=/test; Secure';
         $this->assertEquals($headerLine, $cookie);
 
-        $cookie = $this->cookie('__host-name')->valueHeader('test');
+        $cookie     = $this->cookie('__host-name')->valueHeader('test');
         $headerLine = '__host-name=test; Path=/; Secure';
         $this->assertEquals($headerLine, $cookie);
     }

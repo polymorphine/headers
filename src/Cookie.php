@@ -71,12 +71,18 @@ class Cookie
      * Creates new Cookie instance with its directives and name
      * given as parameter.
      *
+     * NOTE: Cookie name determines its entity. It means that if
+     * instance name is the same as given parameter same object
+     * will be returned.
+     *
      * @param string $name
      *
      * @return Cookie
      */
     public function withName(string $name): self
     {
+        if ($name === $this->name) { return $this; }
+
         $clone = clone $this;
         $clone->name = $name;
 

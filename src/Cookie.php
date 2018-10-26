@@ -64,6 +64,11 @@ class Cookie
         return new self($name, ['Expires' => null, 'MaxAge' => self::MAX_TIME] + $directives);
     }
 
+    public static function session($name, $directives = []): self
+    {
+        return new self($name, $directives + ['HttpOnly' => true, 'SameSite' => 'Lax']);
+    }
+
     /**
      * Creates new Cookie instance with its directives and name
      * given as parameter.

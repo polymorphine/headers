@@ -107,6 +107,13 @@ class CookieTest extends TestCase
         $this->assertSame($expectedHeader, $cookie->valueHeader('hash-3284682736487236'));
     }
 
+    public function testSessionConstructor()
+    {
+        $expectedHeader = 'SessionId=1234567890; Path=/; HttpOnly; SameSite=Lax';
+        $cookie         = Cookie::session('SessionId');
+        $this->assertSame($expectedHeader, $cookie->valueHeader('1234567890'));
+    }
+
     public function testSecureAndHostNamePrefixWillForceSecureDirective()
     {
         $cookie     = $this->cookie('__SECURE-name', ['Domain' => 'example.com', 'Path' => '/test'])->valueHeader('test');

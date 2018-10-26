@@ -118,6 +118,9 @@ class Cookie
      * Constructor directive setter:
      * This cookie should be removed after given date.
      *
+     * NOTE: If both Expires and MaxAge directives are provided
+     * MaxAge values are set.
+     *
      * @param DateTime $expires
      */
     protected function setExpires(DateTime $expires): void
@@ -128,6 +131,9 @@ class Cookie
     /**
      * Constructor directive setter:
      * This cookie should be removed after given number of seconds.
+     *
+     * NOTE: This directive takes precedence over Expires directive
+     * if both are provided.
      *
      * @param int $seconds
      */

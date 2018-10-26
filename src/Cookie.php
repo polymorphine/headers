@@ -59,11 +59,36 @@ class Cookie
         }
     }
 
+    /**
+     * Creates cookie that should be sent back util explicitly revoked.
+     * In detail this cookie is created with very long expiration
+     * time (5 years) which makes it practically permanent.
+     *
+     * Beside overriding expiry directives parameters are handled the same
+     * as in default constructor.
+     *
+     * @param $name
+     * @param array $directives
+     *
+     * @return Cookie
+     */
     public static function permanent($name, $directives = []): self
     {
         return new self($name, ['Expires' => null, 'MaxAge' => self::MAX_TIME] + $directives);
     }
 
+    /**
+     * Creates cookie with directives that if omitted will default
+     * to those usually applied by sessions (HttpOnly, SameSite Lax).
+     *
+     * Beside fallback option this (named constructor) method parameters
+     * are handled the same as in default constructor.
+     *
+     * @param $name
+     * @param array $directives
+     *
+     * @return Cookie
+     */
     public static function session($name, $directives = []): self
     {
         return new self($name, $directives + ['HttpOnly' => true, 'SameSite' => 'Lax']);

@@ -59,6 +59,11 @@ class CookieTest extends TestCase
         $this->assertEquals($expectedHeader, $header);
     }
 
+    public function testNamePropertyAccessor()
+    {
+        $this->assertSame('nameOfTheCookie', $this->cookie('nameOfTheCookie')->name());
+    }
+
     /**
      * @dataProvider cookieData
      *

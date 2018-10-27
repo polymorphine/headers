@@ -94,6 +94,11 @@ class Cookie
         return new self($name, $directives + ['HttpOnly' => true, 'SameSite' => 'Lax']);
     }
 
+    public function name(): string
+    {
+        return $this->name;
+    }
+
     /**
      * Creates new Cookie instance with its directives and name
      * given as parameter.

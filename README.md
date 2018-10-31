@@ -22,25 +22,40 @@
            'SameSite' => 'Strict'
        ]);
 
-2. Get Header string that sets value or requests cookie to be removed (from browser)
+2. Get Header string that sets value or requests cookie to be removed (from browser):
 
        $cookieHeader = $cookie->valueHeader('value');
        $cookieHeader = $cookie->revokeHeader();
 
-3. Add `Set-Cookie` header to your response. For example Psr-7 `ResponseInterface`
-   using one of its [`MessageInterface`](https://www.php-fig.org/psr/psr-7/#31-psrhttpmessagemessageinterface)
-   methods.
+3. Add `Set-Cookie` header to your application's response.
+   For example Psr-7 [`ResponseInterface`](https://www.php-fig.org/psr/psr-7/):
 
        return $response->withAddedHeader('Set-Cookie', $cookieHeader);
 
 ### Directives and Attributes
 
-...
+Directives are the same as in [RFC6265](https://tools.ietf.org/html/rfc6265#section-4.1.2)
+section about Set-Cookie header attributes (except relatively new `SameSite` directive) and
+their description might be found in many online documentations. Concise description with
+additional class logic is also explained in docBlocks of constructor setter methods
+of [`Cookie`](src/Cookie.php) class.
+ 
+Here are some class-specific rules for setting those directives:
+* Empty values and root path (`/`) might be omitted as they're same as default.
+* `SameSite` allowed values are `Strict` or `Lax`, but `Lax` will be set for any non-empty value given.
+* `Expires` and `MaxAge` are different ways to set the same cookie's expiry date.
+  If both given value of `MaxAge` will be used.
 
 ### Alternative constructors
 
-...
+Cookie class has two named constructors: `Cookie::permanent()` and `Cookie::session()`
+* **Permanent** constructor _forces_ long (5 years) expiry values (`Expires` and `MaxAge`) 
+* **Session** constructor sets security directives (`HttpOnly` and `SameSite=Lax`) as default.
+  Unlike for "permanent cookie" these directives can be overridden by given parameters.
 
 ### Reuse Attributes for another cookie
 
-...
+Cookie object can be used as prototype for multiple Set-Cookie headers that can be created using
+`Cookie::withName()` method that will clone current cookie attributes with given name.
+When current name is passed new instance is not created, because cookie with that name will be
+overwritten by last header if defined multiple times.

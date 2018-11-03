@@ -22,9 +22,9 @@ class ResponseHeaders implements MiddlewareInterface
     private $headers = [];
 
     /**
-     * @param string[][] $headers
+     * @param Header[] $headers
      */
-    public function __construct(array $headers = [])
+    public function __construct(Header ...$headers)
     {
         $this->headers = $headers;
     }
@@ -32,16 +32,14 @@ class ResponseHeaders implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
-        foreach ($this->headers as $name => $headerLines) {
-            foreach ($headerLines as $headerLine) {
-                $response = $response->withAddedHeader($name, $headerLine);
-            }
+        foreach ($this->headers as $header) {
+            $response = $header->addTo($response);
         }
         return $response;
     }
 
-    public function add(string $name, string $headerLine): void
+    public function add(Header $header): void
     {
-        $this->headers[$name][] = $headerLine;
+        $this->headers[] = $header;
     }
 }

@@ -13,6 +13,8 @@ namespace Polymorphine\Headers\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Polymorphine\Headers\ResponseHeaders;
+use Polymorphine\Headers\Header;
+use Polymorphine\Headers\Tests\Doubles\FakeHeader;
 use Polymorphine\Headers\Tests\Doubles\FakeRequestHandler;
 use Polymorphine\Headers\Tests\Doubles\FakeServerRequest;
 use Polymorphine\Headers\Tests\Doubles\FakeResponse;
@@ -29,14 +31,14 @@ class ResponseHeadersTest extends TestCase
 
     public function testAddHeaders()
     {
-        $headers = $this->middleware(['Set-Cookie' => ['default=value']]);
-        $headers->add('Set-Cookie', 'name=value');
+        $headers = $this->middleware(new FakeHeader('Set-Cookie', 'default=value'));
+        $headers->add(new FakeHeader('Set-Cookie', 'name=value'));
         $this->assertSame(['Set-Cookie' => ['default=value', 'name=value']], $this->response($headers)->getHeaders());
     }
 
-    private function middleware(array $headers = [])
+    private function middleware(Header ...$headers)
     {
-        return new ResponseHeaders($headers);
+        return new ResponseHeaders(...$headers);
     }
 
     private function response(MiddlewareInterface $headers): ResponseInterface

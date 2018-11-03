@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Polymorphine/Cookie package.
+ * This file is part of Polymorphine/Headers package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,17 +9,20 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Polymorphine\Cookie;
+namespace Polymorphine\Headers;
 
+use Psr\Http\Message\MessageInterface;
 use DateTime;
 
 
-class Cookie
+class SetCookieHeader implements Header
 {
     /** @var int Five years time equivalent in seconds */
     private const MAX_TIME = 157680000;
 
     private $name;
+    private $header;
+    private $context;
 
     /** @var DateTime */
     private $expires;
@@ -45,12 +48,14 @@ class Cookie
      * __Secure- force: Secure
      * __Host-   force: Secure, Domain (current) & Path (root)
      *
-     * @param $name
-     * @param array $directives
+     * @param string          $name
+     * @param array           $directives
+     * @param ResponseHeaders $context
      */
-    public function __construct($name, $directives = [])
+    public function __construct($name, $directives = [], ResponseHeaders $context = null)
     {
-        $this->name = $name;
+        $this->name    = $name;
+        $this->context = $context;
 
         foreach (array_keys($this->directives) as $name) {
             if (!$value = $directives[$name] ?? null) { continue; }
@@ -70,7 +75,7 @@ class Cookie
      * @param $name
      * @param array $directives
      *
-     * @return Cookie
+     * @return SetCookieHeader
      */
     public static function permanent($name, $directives = []): self
     {
@@ -87,11 +92,18 @@ class Cookie
      * @param $name
      * @param array $directives
      *
-     * @return Cookie
+     * @return SetCookieHeader
      */
     public static function session($name, $directives = []): self
     {
         return new self($name, $directives + ['HttpOnly' => true, 'SameSite' => 'Lax']);
+    }
+
+    public function addToMessage(MessageInterface $message): MessageInterface
+    {
+        return $this->header
+            ? $message->withAddedHeader('Set-Cookie', $this->header)
+            : $message;
     }
 
     public function name(): string
@@ -109,7 +121,7 @@ class Cookie
      *
      * @param string $name
      *
-     * @return Cookie
+     * @return SetCookieHeader
      */
     public function withName(string $name): self
     {
@@ -122,26 +134,28 @@ class Cookie
     }
 
     /**
-     * Header line that requests this cookie to be sent with given value.
+     * Header will request this cookie to be sent with given value.
      *
      * @param string $value
      *
-     * @return string
+     * @return SetCookieHeader
      */
-    public function valueHeader(string $value): string
+    public function set(string $value): self
     {
-        return $this->header($value);
+        $this->compileHeader($value);
+        return $this;
     }
 
     /**
-     * Header line that requests this cookie to be removed.
+     * Header will request this cookie to be removed.
      *
-     * @return string
+     * @return SetCookieHeader
      */
-    public function revokeHeader(): string
+    public function revoke(): self
     {
         $this->setMaxAge(-self::MAX_TIME);
-        return $this->header('');
+        $this->compileHeader('');
+        return $this;
     }
 
     /**
@@ -228,7 +242,7 @@ class Cookie
         $this->directives['SameSite'] = ($value === 'Strict') ? 'Strict' : 'Lax';
     }
 
-    private function header(string $value): string
+    private function compileHeader(string $value): void
     {
         $this->setPrefixedNameDirectives();
 
@@ -244,7 +258,8 @@ class Cookie
             $header .= '; ' . $directive . ($value === true ? '' : '=' . $value);
         }
 
-        return $header;
+        $this->header = $header;
+        if ($this->context) { $this->context->push($this); }
     }
 
     private function setPrefixedNameDirectives(): void

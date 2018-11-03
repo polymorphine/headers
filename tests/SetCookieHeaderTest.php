@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Polymorphine/Cookie package.
+ * This file is part of Polymorphine/Headers package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -9,16 +9,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Polymorphine\Cookie\Tests;
+namespace Polymorphine\Headers\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Polymorphine\Cookie\Cookie;
+use Polymorphine\Headers\SetCookieHeader as Cookie;
+use Polymorphine\Headers\ResponseHeaders;
 use DateTime;
 
 require_once __DIR__ . '/Fixtures/time-functions.php';
 
 
-class CookieTest extends TestCase
+class SetCookieHeaderTest extends TestCase
 {
     public function testInstantiation()
     {
@@ -34,15 +35,14 @@ class CookieTest extends TestCase
 
         $directive = ['Expires' => $this->fixedDate(7200)];
 
-        $this->assertSame($expectedHeader, Cookie::permanent('name', $directive)->valueHeader('value'));
-        $this->assertSame($standardHeader, $this->cookie('name', $directive)->valueHeader('value'));
+        $this->assertSame([$expectedHeader], $this->responseHeader(Cookie::permanent('name', $directive)->set('value')));
+        $this->assertSame([$standardHeader], $this->responseHeader($this->cookie('name', $directive)->set('value')));
     }
 
     public function testSessionConstructor()
     {
         $expectedHeader = 'SessionId=1234567890; Path=/; HttpOnly; SameSite=Lax';
-        $cookie         = Cookie::session('SessionId');
-        $this->assertSame($expectedHeader, $cookie->valueHeader('1234567890'));
+        $this->assertSame([$expectedHeader], $this->responseHeader(Cookie::session('SessionId')->set('1234567890')));
     }
 
     /**
@@ -55,8 +55,32 @@ class CookieTest extends TestCase
     {
         $name   = $data['name'];
         $cookie = $this->cookie($name, $data);
-        $header = $data['value'] ? $cookie->valueHeader($data['value']) : $cookie->revokeHeader();
-        $this->assertEquals($expectedHeader, $header);
+        $cookie = $data['value'] ? $cookie->set($data['value']) : $cookie->revoke();
+        $this->assertEquals([$expectedHeader], $this->responseHeader($cookie));
+    }
+
+    public function testHeadersAreAdded()
+    {
+        $cookie1 = Cookie::session('session1')->set('val1');
+        $cookie2 = Cookie::session('session2')->set('val2');
+
+        $response = new Doubles\FakeResponse();
+        $cookie1->addToMessage($response);
+        $cookie2->addToMessage($response);
+        $this->assertCount(2, $response->getHeader('Set-Cookie'));
+    }
+
+    public function testHeadersArePassedToContext()
+    {
+        $context = new ResponseHeaders();
+
+        $cookieHeader = $this->responseHeader((new Cookie('test', [], $context))->set('value'));
+        $contextResponse = $context->process(
+            new Doubles\FakeServerRequest(),
+            new Doubles\FakeRequestHandler(new Doubles\FakeResponse())
+        );
+
+        $this->assertSame($cookieHeader, $contextResponse->getHeader('Set-Cookie'));
     }
 
     public function testNamePropertyAccessor()
@@ -78,8 +102,8 @@ class CookieTest extends TestCase
 
         $this->assertNotSame($oldCookie, $newCookie);
 
-        $header = $data['value'] ? $newCookie->valueHeader($data['value']) : $newCookie->revokeHeader();
-        $this->assertEquals('new-' . $expectedHeader, $header);
+        $cookie = $data['value'] ? $newCookie->set($data['value']) : $newCookie->revoke();
+        $this->assertEquals(['new-' . $expectedHeader], $this->responseHeader($cookie));
     }
 
     public function testGivenSameName_WithNameMethod_ReturnsSameInstance()
@@ -94,25 +118,25 @@ class CookieTest extends TestCase
     {
         $expectedHeader = 'name=value; Path=/; Expires=Tuesday, 01-May-2018 00:01:40 UTC; MaxAge=100';
         $directives     = ['MaxAge' => 100, 'Expires' => $this->fixedDate(3600)];
-        $this->assertSame($expectedHeader, $this->cookie('name', $directives)->valueHeader('value'));
+        $this->assertSame([$expectedHeader], $this->responseHeader($this->cookie('name', $directives)->set('value')));
     }
 
     public function testSecureAndHostNamePrefixWillForceSecureDirective()
     {
-        $header   = $this->cookie('__SECURE-name', ['Domain' => 'example.com', 'Path' => '/test'])->valueHeader('test');
+        $cookie   = $this->cookie('__SECURE-name', ['Domain' => 'example.com', 'Path' => '/test'])->set('test');
         $expected = '__SECURE-name=test; Domain=example.com; Path=/test; Secure';
-        $this->assertEquals($expected, $header);
+        $this->assertEquals([$expected], $this->responseHeader($cookie));
 
-        $header   = $this->cookie('__host-name')->valueHeader('test');
+        $cookie   = $this->cookie('__host-name')->set('test');
         $expected = '__host-name=test; Path=/; Secure';
-        $this->assertEquals($expected, $header);
+        $this->assertEquals([$expected], $this->responseHeader($cookie));
     }
 
     public function testHostNamePrefixWillForceRootPathAndDomain()
     {
-        $header   = $this->cookie('__Host-name', ['Domain' => 'example.com', 'Path' => '/test'])->valueHeader('test');
+        $cookie   = $this->cookie('__Host-name', ['Domain' => 'example.com', 'Path' => '/test'])->set('test');
         $expected = '__Host-name=test; Path=/; Secure';
-        $this->assertEquals($expected, $header);
+        $this->assertEquals([$expected], $this->responseHeader($cookie));
     }
 
     public function cookieData()
@@ -147,11 +171,16 @@ class CookieTest extends TestCase
 
     private function fixedDate(int $secondsFromNow = 0): DateTime
     {
-        return (new DateTime())->setTimestamp(\Polymorphine\Cookie\time() + $secondsFromNow);
+        return (new DateTime())->setTimestamp(\Polymorphine\Headers\time() + $secondsFromNow);
     }
 
     private function cookie(string $name, array $attributes = [])
     {
         return new Cookie($name, $attributes);
+    }
+
+    private function responseHeader(Cookie $cookie): array
+    {
+        return $cookie->addToMessage(new Doubles\FakeResponse())->getHeader('Set-Cookie');
     }
 }

@@ -12,7 +12,7 @@
 
 1. Instantiate a cookie with its name and array of **optional** directives and attributes:
 
-       $cookie = new Cookie('myCookie', [
+       $cookie = new SetCookieHeader('myCookie', [
            'Domain'   => 'example.com',
            'Path'     => '/admin',
            'Expires'  => new DateTime(...),
@@ -22,15 +22,14 @@
            'SameSite' => 'Strict'
        ]);
 
-2. Get Header string that sets value or requests cookie to be removed (from browser):
+2. Set value or revoke request:
 
-       $cookieHeader = $cookie->valueHeader('value');
-       $cookieHeader = $cookie->revokeHeader();
+       $cookie->set('value');
+       $cookie->revoke();
 
-3. Add `Set-Cookie` header to your application's response.
-   For example Psr-7 [`ResponseInterface`](https://www.php-fig.org/psr/psr-7/):
+3. Add `Set-Cookie` header to your application's [`Psr-7`](https://www.php-fig.org/psr/psr-7/) response:
 
-       return $response->withAddedHeader('Set-Cookie', $cookieHeader);
+       $response = $cookie->addTo($response);
 
 ### Directives and Attributes
 
@@ -38,8 +37,8 @@ Directives are the same as in [RFC6265](https://tools.ietf.org/html/rfc6265#sect
 section about Set-Cookie header attributes (except relatively new `SameSite` directive) and
 their description might be found in many online documentations. Concise description with
 additional class logic is also explained in docBlocks of constructor setter methods
-of [`Cookie`](src/Cookie.php) class.
- 
+of [`SetCookieHeader`](src/SetCookieHeader.php) class.
+
 Here are some class-specific rules for setting those directives:
 * Empty values and root path (`/`) might be omitted as they're same as default.
 * `SameSite` allowed values are `Strict` or `Lax`, but `Lax` will be set for any non-empty value given.
@@ -48,7 +47,7 @@ Here are some class-specific rules for setting those directives:
 
 ### Alternative constructors
 
-Cookie class has two named constructors: `Cookie::permanent()` and `Cookie::session()`
+Cookie class has two named constructors: `SetCookieHeader::permanent()` and `SetCookieHeader::session()`
 * **Permanent** constructor _forces_ long (5 years) expiry values (`Expires` and `MaxAge`) 
 * **Session** constructor sets security directives (`HttpOnly` and `SameSite=Lax`) as default.
   Unlike for "permanent cookie" these directives can be overridden by given parameters.
@@ -56,6 +55,6 @@ Cookie class has two named constructors: `Cookie::permanent()` and `Cookie::sess
 ### Reuse Attributes for another cookie
 
 Cookie object can be used as prototype for multiple Set-Cookie headers that can be created using
-`Cookie::withName()` method that will clone current cookie attributes with given name.
+`SetCookieHeader::withName()` method that will clone current cookie attributes with given name.
 When current name is passed new instance is not created, because cookie with that name will be
 overwritten by last header if defined multiple times.

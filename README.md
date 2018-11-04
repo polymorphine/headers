@@ -10,9 +10,10 @@
 
 ### Basic usage
 
-1. Instantiate a cookie with its name and array of **optional** directives and attributes:
+1. Instantiate a cookie setup with `ResponseHeaders` context and (*optional*) array of directives/attributes:
 
-       $cookie = new SetCookieHeader('myCookie', [
+       $context = new ResponseHeaders();
+       $cookieSetup = new CookieSetup($context, [
            'Domain'   => 'example.com',
            'Path'     => '/admin',
            'Expires'  => new DateTime(...),
@@ -22,39 +23,44 @@
            'SameSite' => 'Strict'
        ]);
 
-2. Set value or revoke request:
+   Modifying setup object is possible with its mutator methods.
 
-       $cookie->set('value');
-       $cookie->revoke();
+2. Instantiate Cookie with its name:
 
-3. Add `Set-Cookie` header to your application's [`Psr-7`](https://www.php-fig.org/psr/psr-7/) response:
+       $cookie = $cookieSetup->cookie('MyCookie');
 
-       $response = $cookie->addTo($response);
+   Although its value is not sent within `Set-Cookie` header `Cookie` object is immutable.
+   However, it is possible to create cookie with another name and the same set of attributes
+   with `Cookie::withName()` method:
+   
+       $badCookie = $cookie->withName('BadCookie');
+
+3. Send value or order to remove cookie:
+
+       $cookie->send('value');
+       $badCookie->revoke();
+
+   Each cookie can send/revoke header only once
+       
 
 ### Directives and Attributes
 
-Directives are the same as in [RFC6265](https://tools.ietf.org/html/rfc6265#section-4.1.2)
-section about Set-Cookie header attributes (except relatively new `SameSite` directive) and
-their description might be found in many online documentations. Concise description with
-additional class logic is also explained in docBlocks of constructor setter methods
-of [`SetCookieHeader`](src/SetCookieHeader.php) class.
+Directives are used according to [RFC6265](https://tools.ietf.org/html/rfc6265#section-4.1.2)
+section about Set-Cookie header attributes (except relatively new `SameSite` directive). Their
+description might also be found at [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie).
+Concise description with additional class logic is explained in docBlocks of mutator methods
+of [`CookieSetup`](src/CookieSetup.php) class.
 
 Here are some class-specific rules for setting those directives:
 * Empty values and root path (`/`) might be omitted as they're same as default.
 * `SameSite` allowed values are `Strict` or `Lax`, but `Lax` will be set for any non-empty value given.
 * `Expires` and `MaxAge` are different ways to set the same cookie's expiry date.
-  If both given value of `MaxAge` will be used.
+  If both directives will be passed into constructor or `directivesArray()` method,
+  last value will be used due to overwrite.
 
-### Alternative constructors
+### Cookie with predefined directives
 
-Cookie class has two named constructors: `SetCookieHeader::permanent()` and `SetCookieHeader::session()`
-* **Permanent** constructor _forces_ long (5 years) expiry values (`Expires` and `MaxAge`) 
-* **Session** constructor sets security directives (`HttpOnly` and `SameSite=Lax`) as default.
-  Unlike for "permanent cookie" these directives can be overridden by given parameters.
-
-### Reuse Attributes for another cookie
-
-Cookie object can be used as prototype for multiple Set-Cookie headers that can be created using
-`SetCookieHeader::withName()` method that will clone current cookie attributes with given name.
-When current name is passed new instance is not created, because cookie with that name will be
-overwritten by last header if defined multiple times.
+`CookieSetup` has two alternative methods creating `Cookie` instance: `CookieSetup::permanentCookie()` and
+`CookieSetup::sessionCookie()`.
+* *Permanent* constructor sets long (5 years) expiry values (`Expires` and `MaxAge`) 
+* *Session* constructor sets security directives (`HttpOnly` and `SameSite=Lax`)

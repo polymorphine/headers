@@ -16,8 +16,7 @@ use DateTime;
 
 class CookieSetup
 {
-    /** @var int Five years time equivalent in seconds */
-    private const MAX_TIME = 157680000;
+    private const FIVE_YEARS_IN_SEC = 157680000;
 
     private $responseHeaders;
     private $directives;
@@ -62,7 +61,7 @@ class CookieSetup
             'SameSite' => false
         ];
 
-        foreach (Cookie::DIRECTIVE_NAMES as $name) {
+        foreach (AssembledCookie::DIRECTIVE_NAMES as $name) {
             if (empty($directives[$name])) { continue; }
             $setMethod = lcfirst($name);
             $this->{$setMethod}($directives[$name]);
@@ -84,7 +83,7 @@ class CookieSetup
      */
     public function cookie(string $name): Cookie
     {
-        return new Cookie($name, $this->directives, $this->responseHeaders);
+        return new AssembledCookie($name, $this->directives, $this->responseHeaders);
     }
 
     /**
@@ -100,7 +99,7 @@ class CookieSetup
      */
     public function permanentCookie($name): Cookie
     {
-        $this->maxAge(self::MAX_TIME);
+        $this->maxAge(self::FIVE_YEARS_IN_SEC);
         return $this->cookie($name);
     }
 

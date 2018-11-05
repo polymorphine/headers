@@ -26,7 +26,7 @@
 
    Modifying setup object is possible with its mutator methods.
 
-2. Instantiate Cookie with its name:
+2. Instantiate [`Cookie`](/src/Cookie.php) type object with its name:
 
        $cookie = $cookieSetup->cookie('MyCookie');
 

@@ -11,10 +11,8 @@
 
 namespace Polymorphine\Headers;
 
-use Psr\Http\Message\MessageInterface;
 
-
-interface Header
+interface HeadersContext
 {
-    public function addToMessage(MessageInterface $message): MessageInterface;
+    public function push(Header $header): void;
 }

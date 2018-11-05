@@ -17,7 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 
-class ResponseHeaders implements MiddlewareInterface
+class ResponseHeaders implements MiddlewareInterface, HeadersContext
 {
     private $headers = [];
 
@@ -33,12 +33,12 @@ class ResponseHeaders implements MiddlewareInterface
     {
         $response = $handler->handle($request);
         foreach ($this->headers as $header) {
-            $response = $header->addTo($response);
+            $response = $header->addToMessage($response);
         }
         return $response;
     }
 
-    public function add(Header $header): void
+    public function push(Header $header): void
     {
         $this->headers[] = $header;
     }

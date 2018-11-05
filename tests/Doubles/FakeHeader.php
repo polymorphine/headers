@@ -26,7 +26,7 @@ class FakeHeader implements Header
         $this->value = $value;
     }
 
-    public function addTo(MessageInterface $message): MessageInterface
+    public function addToMessage(MessageInterface $message): MessageInterface
     {
         return $message->withAddedHeader($this->name, $this->value);
     }

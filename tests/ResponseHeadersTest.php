@@ -32,7 +32,7 @@ class ResponseHeadersTest extends TestCase
     public function testAddHeaders()
     {
         $headers = $this->middleware(new FakeHeader('Set-Cookie', 'default=value'));
-        $headers->add(new FakeHeader('Set-Cookie', 'name=value'));
+        $headers->push(new FakeHeader('Set-Cookie', 'name=value'));
         $this->assertSame(['Set-Cookie' => ['default=value', 'name=value']], $this->response($headers)->getHeaders());
     }
 

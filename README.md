@@ -10,7 +10,8 @@
 
 ### Basic usage
 
-1. Instantiate a cookie setup with `ResponseHeaders` context and (*optional*) array of directives/attributes:
+1. Instantiate a cookie setup with `ResponseHeaders` context and (*optional*) array
+   of directives/attributes (see [`resetDirectives()`](/src/CookieSetup.php#L53) method):
 
        $context = new ResponseHeaders();
        $cookieSetup = new CookieSetup($context, [

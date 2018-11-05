@@ -22,15 +22,15 @@ class Cookie
 
     private $name;
     private $directives;
-    private $context;
+    private $headers;
 
     private $sent = false;
 
-    public function __construct(string $name, array $directives, ResponseHeaders $context)
+    public function __construct(string $name, array $directives, HeadersContext $headers)
     {
         $this->name       = $name;
         $this->directives = $directives + ['Path' => '/'];
-        $this->context    = $context;
+        $this->headers    = $headers;
     }
 
     public function __clone()
@@ -61,7 +61,7 @@ class Cookie
             throw new CookieAlreadySentException(sprintf($message, $this->name));
         }
 
-        $this->context->push(new SetCookieHeader($this->compileHeader($value)));
+        $this->headers->push(new SetCookieHeader($this->compileHeader($value)));
         $this->sent = true;
     }
 

@@ -19,32 +19,29 @@ class CookieSetup
     /** @var int Five years time equivalent in seconds */
     private const MAX_TIME = 157680000;
 
-    private $context;
-
-    private $directives = [
-        'Domain'   => null,
-        'Path'     => '/',
-        'Expires'  => null,
-        'MaxAge'   => null,
-        'Secure'   => false,
-        'HttpOnly' => false,
-        'SameSite' => false
-    ];
+    private $responseHeaders;
+    private $directives;
 
     /**
-     * @param ResponseHeaders $context
-     * @param array           $directives passed to self::directivesArray method
+     * @see CookieSetup::resetDirectives() for $directives parameter details
+     *
+     * @param HeadersContext $responseHeaders
+     * @param array          $directives
      */
-    public function __construct(ResponseHeaders $context, array $directives = [])
+    public function __construct(HeadersContext $responseHeaders, array $directives = [])
     {
-        $this->context = $context;
-        $this->directivesArray($directives);
+        $this->responseHeaders = $responseHeaders;
+        $this->resetDirectives($directives);
     }
 
     /**
      * Compound mutator with $directives array parameter in which
      * keys should correspond to self::$directives properties and
      * other concrete directive setter methods.
+     *
+     * Directives are set to default before passed options are
+     * applied, so that state produced by directives array was
+     * always the same.
      *
      * NOTE: If both Expires and MaxAge directives are provided
      * MaxAge values will be set.
@@ -53,14 +50,22 @@ class CookieSetup
      *
      * @return static
      */
-    public function directivesArray(array $directives): self
+    public function resetDirectives(array $directives): self
     {
-        foreach ($directives as $name => $value) {
-            if (!$value || !array_key_exists($name, $this->directives)) {
-                continue;
-            }
+        $this->directives = [
+            'Domain'   => null,
+            'Path'     => '/',
+            'Expires'  => null,
+            'MaxAge'   => null,
+            'Secure'   => false,
+            'HttpOnly' => false,
+            'SameSite' => false
+        ];
+
+        foreach (Cookie::DIRECTIVE_NAMES as $name) {
+            if (empty($directives[$name])) { continue; }
             $setMethod = lcfirst($name);
-            $this->{$setMethod}($value);
+            $this->{$setMethod}($directives[$name]);
         }
 
         return $this;
@@ -79,7 +84,7 @@ class CookieSetup
      */
     public function cookie(string $name): Cookie
     {
-        return new Cookie($name, $this->directives, $this->context);
+        return new Cookie($name, $this->directives, $this->responseHeaders);
     }
 
     /**

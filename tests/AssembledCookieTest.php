@@ -12,8 +12,8 @@
 namespace Polymorphine\Headers\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Polymorphine\Headers\AssembledCookie;
-use Polymorphine\Headers\CookieSetup;
+use Polymorphine\Headers\Cookie\AssembledCookie;
+use Polymorphine\Headers\Cookie\CookieSetup;
 use Polymorphine\Headers\Exception\CookieAlreadySentException;
 use Polymorphine\Headers\ResponseHeaders;
 use DateTime;
@@ -179,7 +179,7 @@ class AssembledCookieTest extends TestCase
 
     private function fixedDate(int $secondsFromNow = 0): DateTime
     {
-        return (new DateTime())->setTimestamp(\Polymorphine\Headers\time() + $secondsFromNow);
+        return (new DateTime())->setTimestamp(\Polymorphine\Headers\Cookie\time() + $secondsFromNow);
     }
 
     private function cookieSetup(&$context = null, array $attributes = []): CookieSetup

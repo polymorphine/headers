@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Polymorphine\Headers\Exception;
+namespace Polymorphine\Headers\Cookie\Exception;
 
 use RuntimeException;
 

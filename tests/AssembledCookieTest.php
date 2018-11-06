@@ -14,7 +14,7 @@ namespace Polymorphine\Headers\Tests;
 use PHPUnit\Framework\TestCase;
 use Polymorphine\Headers\Cookie\AssembledCookie;
 use Polymorphine\Headers\Cookie\CookieSetup;
-use Polymorphine\Headers\Exception\CookieAlreadySentException;
+use Polymorphine\Headers\Cookie\Exception;
 use Polymorphine\Headers\ResponseHeaders;
 use DateTime;
 
@@ -143,7 +143,7 @@ class AssembledCookieTest extends TestCase
         $cookie = $this->cookieSetup($context)->cookie('name');
 
         $cookie->send('value');
-        $this->expectException(CookieAlreadySentException::class);
+        $this->expectException(Exception\CookieAlreadySentException::class);
         $cookie->send('value');
     }
 

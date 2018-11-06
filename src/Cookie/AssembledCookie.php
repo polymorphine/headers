@@ -14,7 +14,6 @@ namespace Polymorphine\Headers\Cookie;
 use Polymorphine\Headers\Cookie;
 use Polymorphine\Headers\HeadersContext;
 use Polymorphine\Headers\Header\SetCookieHeader;
-use Polymorphine\Headers\Exception\CookieAlreadySentException;
 use DateTime;
 
 
@@ -50,7 +49,7 @@ class AssembledCookie implements Cookie
     {
         if ($this->sent) {
             $message = 'Cannot overwrite `%s` cookie header';
-            throw new CookieAlreadySentException(sprintf($message, $this->name));
+            throw new Exception\CookieAlreadySentException(sprintf($message, $this->name));
         }
 
         $this->headers->push(new SetCookieHeader($this->compileHeader($value)));

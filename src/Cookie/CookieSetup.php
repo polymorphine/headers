@@ -63,7 +63,7 @@ class CookieSetup
             'SameSite' => false
         ];
 
-        foreach (AssembledCookie::DIRECTIVE_NAMES as $name) {
+        foreach (HeadersContextCookie::DIRECTIVE_NAMES as $name) {
             if (empty($directives[$name])) { continue; }
             $setMethod = lcfirst($name);
             $this->{$setMethod}($directives[$name]);
@@ -85,7 +85,7 @@ class CookieSetup
      */
     public function cookie(string $name): Cookie
     {
-        return new AssembledCookie($name, $this->directives, $this->responseHeaders);
+        return new HeadersContextCookie($name, $this->directives, $this->responseHeaders);
     }
 
     /**

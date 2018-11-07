@@ -17,7 +17,7 @@ use Polymorphine\Headers\Header\SetCookieHeader;
 use DateTime;
 
 
-class AssembledCookie implements Cookie
+class HeadersContextCookie implements Cookie
 {
     const DIRECTIVE_NAMES = ['Domain', 'Path', 'Expires', 'MaxAge', 'Secure', 'HttpOnly', 'SameSite'];
 

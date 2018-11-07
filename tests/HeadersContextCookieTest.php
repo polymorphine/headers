@@ -12,7 +12,7 @@
 namespace Polymorphine\Headers\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Polymorphine\Headers\Cookie\AssembledCookie;
+use Polymorphine\Headers\Cookie\HeadersContextCookie;
 use Polymorphine\Headers\Cookie\CookieSetup;
 use Polymorphine\Headers\Cookie\Exception;
 use Polymorphine\Headers\ResponseHeaders;
@@ -21,14 +21,14 @@ use DateTime;
 require_once __DIR__ . '/Fixtures/time-functions.php';
 
 
-class AssembledCookieTest extends TestCase
+class HeadersContextCookieTest extends TestCase
 {
     public function testInstantiation()
     {
         $this->assertInstanceOf(CookieSetup::class, $setup = $this->cookieSetup());
-        $this->assertInstanceOf(AssembledCookie::class, $setup->cookie('new'));
-        $this->assertInstanceOf(AssembledCookie::class, $setup->permanentCookie('new'));
-        $this->assertInstanceOf(AssembledCookie::class, $setup->sessionCookie('new'));
+        $this->assertInstanceOf(HeadersContextCookie::class, $setup->cookie('new'));
+        $this->assertInstanceOf(HeadersContextCookie::class, $setup->permanentCookie('new'));
+        $this->assertInstanceOf(HeadersContextCookie::class, $setup->sessionCookie('new'));
     }
 
     public function testStandardSetup()

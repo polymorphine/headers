@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Polymorphine/Cookie package.
+ * This file is part of Polymorphine/Headers package.
  *
  * (c) Shudd3r <q3.shudder@gmail.com>
  *
@@ -138,6 +138,34 @@ class AssembledCookieTest extends TestCase
         $this->assertEquals($expected, $this->responseHeader($context));
     }
 
+    /**
+     * @dataProvider invalidAndValidNames
+     *
+     * @param string $invalidName
+     * @param string $validName
+     */
+    public function testInvalidCharacterInCookieName_ThrowsException(string $invalidName, string $validName)
+    {
+        $cookie = $this->cookieSetup()->cookie($validName);
+        $this->expectException(Exception\IllegalCharactersException::class);
+        $cookie->withName($invalidName);
+    }
+
+    /**
+     * @dataProvider invalidAndValidValues
+     *
+     * @param string $invalidValue
+     * @param string $validValue
+     */
+    public function testInvalidCharacterInCookieValue_ThrowsException(string $invalidValue, string $validValue)
+    {
+        $cookie = $this->cookieSetup()->cookie('testValid');
+        $cookie->send($validValue);
+        $cookie = $cookie->withName('testInvalid');
+        $this->expectException(Exception\IllegalCharactersException::class);
+        $cookie->send($invalidValue);
+    }
+
     public function testGivenCookieWasSent_SendCookie_ThrowsException()
     {
         $cookie = $this->cookieSetup($context)->cookie('name');
@@ -175,6 +203,16 @@ class AssembledCookieTest extends TestCase
                 'SameSite' => true
             ]]
         ];
+    }
+
+    public function invalidAndValidNames(): array
+    {
+        return [['foo=bar', 'foo.bar'], ['gówno', 'g%C3%B3wno'], ['foo{bar}', 'foo|bar|']];
+    }
+
+    public function invalidAndValidValues(): array
+    {
+        return [['foo\bar', 'foo=bar'], ['gówno', 'g%C3%B3wno'], ['foo;bar', 'foo(bar)']];
     }
 
     private function fixedDate(int $secondsFromNow = 0): DateTime

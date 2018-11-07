@@ -11,11 +11,15 @@
 
 namespace Polymorphine\Headers;
 
-use Polymorphine\Headers\Exception\CookieAlreadySentException;
+use Polymorphine\Headers\Cookie\Exception\CookieAlreadySentException;
+use Polymorphine\Headers\Cookie\Exception\IllegalCharactersException;
 
 
 interface Cookie
 {
+    const NAME_EXTRA_CHARS  = '!\#$%&\'*+\-.^_`|~';
+    const VALUE_EXTRA_CHARS = self::NAME_EXTRA_CHARS . '\/:=?\@()[\]{}<>';
+
     /**
      * Creates new Cookie instance with given name and directives
      * copied from this object.
@@ -25,6 +29,8 @@ interface Cookie
      * returned.
      *
      * @param string $name
+     *
+     * @throws IllegalCharactersException
      *
      * @return Cookie
      */
@@ -37,7 +43,7 @@ interface Cookie
      *
      * @param string $value
      *
-     * @throws CookieAlreadySentException
+     * @throws CookieAlreadySentException|IllegalCharactersException
      */
     public function send(string $value): void;
 

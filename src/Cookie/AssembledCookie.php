@@ -29,7 +29,7 @@ class AssembledCookie implements Cookie
 
     public function __construct(string $name, array $directives, HeadersContext $headers)
     {
-        $this->name       = $name;
+        $this->name       = $this->validName($name);
         $this->directives = $directives + ['Path' => '/'];
         $this->headers    = $headers;
     }
@@ -39,7 +39,7 @@ class AssembledCookie implements Cookie
         if ($name === $this->name) { return $this; }
 
         $cookie = clone $this;
-        $cookie->name = $name;
+        $cookie->name = $this->validName($name);
         $cookie->sent = false;
 
         return $cookie;
@@ -67,7 +67,7 @@ class AssembledCookie implements Cookie
         $this->synchronizeExpireDirectives();
         $this->setPrefixedNameDirectives();
 
-        $header = $this->name . '=' . $cookieValue;
+        $header = $this->name . '=' . $this->validValue($cookieValue);
 
         foreach (self::DIRECTIVE_NAMES as $name) {
             if (!$value = $this->directives[$name] ?? null) { continue; }
@@ -99,5 +99,25 @@ class AssembledCookie implements Cookie
             $this->directives['Domain'] = null;
             $this->directives['Path']   = '/';
         }
+    }
+
+    private function validName(string $name): string
+    {
+        $pattern = '#[^a-zA-Z0-9' . Cookie::NAME_EXTRA_CHARS . ']#';
+        if (preg_match($pattern, $name)) {
+            throw new Exception\IllegalCharactersException('Illegal characters in Cookie name');
+        }
+
+        return $name;
+    }
+
+    private function validValue(string $value): string
+    {
+        $pattern = '#[^a-zA-Z0-9' . Cookie::VALUE_EXTRA_CHARS . ']#';
+        if (preg_match($pattern, $value)) {
+            throw new Exception\IllegalCharactersException('Illegal characters in Cookie value');
+        }
+
+        return $value;
     }
 }

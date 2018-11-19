@@ -12,7 +12,7 @@
 namespace Polymorphine\Headers\Cookie;
 
 use Polymorphine\Headers\Cookie;
-use Polymorphine\Headers\HeadersContext;
+use Polymorphine\Headers\ResponseHeaders;
 use Polymorphine\Headers\Header\SetCookieHeader;
 use DateTime;
 
@@ -27,7 +27,7 @@ class HeadersContextCookie implements Cookie
 
     private $sent = false;
 
-    public function __construct(string $name, array $directives, HeadersContext $headers)
+    public function __construct(string $name, array $directives, ResponseHeaders $headers)
     {
         $this->name       = $this->validName($name);
         $this->directives = $directives + ['Path' => '/'];

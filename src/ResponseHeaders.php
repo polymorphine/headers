@@ -17,7 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 
-class ResponseHeaders implements MiddlewareInterface, HeadersContext
+final class ResponseHeaders implements MiddlewareInterface
 {
     private $headers = [];
 

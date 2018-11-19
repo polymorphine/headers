@@ -12,7 +12,7 @@
 namespace Polymorphine\Headers\Cookie;
 
 use Polymorphine\Headers\Cookie;
-use Polymorphine\Headers\HeadersContext;
+use Polymorphine\Headers\ResponseHeaders;
 use DateTime;
 
 
@@ -26,10 +26,10 @@ class CookieSetup
     /**
      * @see CookieSetup::resetDirectives() for $directives parameter details
      *
-     * @param HeadersContext $responseHeaders
-     * @param array          $directives
+     * @param ResponseHeaders $responseHeaders
+     * @param array           $directives
      */
-    public function __construct(HeadersContext $responseHeaders, array $directives = [])
+    public function __construct(ResponseHeaders $responseHeaders, array $directives = [])
     {
         $this->responseHeaders = $responseHeaders;
         $this->resetDirectives($directives);

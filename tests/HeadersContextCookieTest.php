@@ -33,7 +33,7 @@ class HeadersContextCookieTest extends TestCase
 
     public function testStandardSetup()
     {
-        $this->cookieSetup($context, ['Expires' => $this->fixedDate(7200)])
+        $this->cookieSetup($context)->directives(['Expires' => $this->fixedDate(7200)])
              ->cookie('name')
              ->send('value');
 
@@ -43,7 +43,8 @@ class HeadersContextCookieTest extends TestCase
 
     public function testPermanentSetup()
     {
-        $this->cookieSetup($context, ['Expires' => $this->fixedDate(7200)])
+        $this->cookieSetup($context)
+             ->directives(['Expires' => $this->fixedDate(7200)])
              ->permanentCookie('name')
              ->send('value');
 
@@ -74,7 +75,8 @@ class HeadersContextCookieTest extends TestCase
      */
     public function testConstructorDirectivesSetting(string $expectedHeader, array $data)
     {
-        $cookie = $this->cookieSetup($context, $data)
+        $cookie = $this->cookieSetup($context)
+                       ->directives($data)
                        ->cookie($data['name']);
         $data['value'] ? $cookie->send($data['value']) : $cookie->revoke();
         $this->assertEquals([$expectedHeader], $this->responseHeader($context));
@@ -94,7 +96,8 @@ class HeadersContextCookieTest extends TestCase
 
     public function testGivenBothExpiryDirectivesToSetupConstructor_FirstOneIsOverwritten()
     {
-        $this->cookieSetup($context, ['Expires' => $this->fixedDate(3600), 'MaxAge' => 100])
+        $this->cookieSetup($context)
+             ->directives(['Expires' => $this->fixedDate(3600), 'MaxAge' => 100])
              ->cookie('name')
              ->send('value');
 
@@ -104,7 +107,8 @@ class HeadersContextCookieTest extends TestCase
 
     public function testSecureNamePrefix_ForcesSecureDirective()
     {
-        $this->cookieSetup($context, ['Domain' => 'example.com', 'Path' => '/test'])
+        $this->cookieSetup($context)
+             ->directives(['Domain' => 'example.com', 'Path' => '/test'])
              ->cookie('__SECURE-name')
              ->send('test');
 
@@ -114,7 +118,8 @@ class HeadersContextCookieTest extends TestCase
 
     public function testHostNamePrefix_ForceSecureRootPathDirectivesWithoutDomain()
     {
-        $this->cookieSetup($context, ['Domain' => 'example.com', 'Path' => '/test'])
+        $this->cookieSetup($context)
+             ->directives(['Domain' => 'example.com', 'Path' => '/test'])
              ->cookie('__host-name')
              ->send('test');
 
@@ -199,10 +204,10 @@ class HeadersContextCookieTest extends TestCase
         return (new DateTime())->setTimestamp(\Polymorphine\Headers\Cookie\time() + $secondsFromNow);
     }
 
-    private function cookieSetup(&$context = null, array $attributes = []): CookieSetup
+    private function cookieSetup(&$context = null): CookieSetup
     {
         $context or $context = new ResponseHeaders();
-        return new CookieSetup($context, $attributes);
+        return new CookieSetup($context);
     }
 
     private function responseHeader(ResponseHeaders $context): array

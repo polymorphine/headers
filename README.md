@@ -9,12 +9,14 @@
     php composer.phar require polymorphine/headers
 
 ### Basic usage
+##### *Set-Cookie header*
 
-1. Instantiate a cookie setup with `ResponseHeaders` context and (*optional*) array
-   of directives/attributes (see [`resetDirectives()`](/src/Cookie/CookieSetup.php#L54) method):
+1. Instantiate a cookie setup using `ResponseHeaders` context and configure with array
+   of directives/attributes (or builder methods) when their value needs to be specified
+   (see [`directives()`](/src/Cookie/CookieSetup.php#L48) method):
 
        $context = new ResponseHeaders();
-       $cookieSetup = new CookieSetup($context, [
+       $cookieSetup = $context->directives([
            'Domain'   => 'example.com',
            'Path'     => '/admin',
            'Expires'  => new DateTime(...),
@@ -40,7 +42,7 @@
 
    Each cookie can send/revoke header only once
 
-### Directives and Attributes
+##### Directives and Attributes
 
 Directives are used according to [RFC6265](https://tools.ietf.org/html/rfc6265#section-4.1.2)
 section about Set-Cookie header attributes (except relatively new `SameSite` directive). Their
@@ -55,7 +57,7 @@ Here are some class-specific rules for setting those directives:
   If both directives will be passed into constructor or `directivesArray()` method,
   last value will be used due to overwrite.
 
-### Cookie with predefined directives
+##### Cookie with predefined directives
 
 `CookieSetup` has two alternative methods creating `Cookie` instance: `CookieSetup::permanentCookie()` and
 `CookieSetup::sessionCookie()`.

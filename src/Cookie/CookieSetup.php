@@ -23,16 +23,10 @@ class CookieSetup
     private $responseHeaders;
     private $directives;
 
-    /**
-     * @see CookieSetup::resetDirectives() for $directives parameter details
-     *
-     * @param ResponseHeaders $responseHeaders
-     * @param array           $directives
-     */
-    public function __construct(ResponseHeaders $responseHeaders, array $directives = [])
+    public function __construct(ResponseHeaders $responseHeaders)
     {
         $this->responseHeaders = $responseHeaders;
-        $this->resetDirectives($directives);
+        $this->directives();
     }
 
     /**
@@ -51,7 +45,7 @@ class CookieSetup
      *
      * @return static
      */
-    public function resetDirectives(array $directives): self
+    public function directives(array $directives = []): self
     {
         $this->directives = [
             'Domain'   => null,

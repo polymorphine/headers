@@ -12,6 +12,7 @@
 namespace Polymorphine\Headers\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Polymorphine\Headers\Cookie\CookieSetup;
 use Polymorphine\Headers\ResponseHeaders;
 use Polymorphine\Headers\Header;
 use Polymorphine\Headers\Tests\Doubles\FakeHeader;
@@ -34,6 +35,11 @@ class ResponseHeadersTest extends TestCase
         $headers = $this->middleware(new FakeHeader('Set-Cookie', 'default=value'));
         $headers->push(new FakeHeader('Set-Cookie', 'name=value'));
         $this->assertSame(['Set-Cookie' => ['default=value', 'name=value']], $this->response($headers)->getHeaders());
+    }
+
+    public function testCookieSetup()
+    {
+        $this->assertInstanceOf(CookieSetup::class, $this->middleware()->cookieSetup());
     }
 
     private function middleware(Header ...$headers)

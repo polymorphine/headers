@@ -11,6 +11,7 @@
 
 namespace Polymorphine\Headers;
 
+use Polymorphine\Headers\Cookie\CookieSetup;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,5 +42,10 @@ final class ResponseHeaders implements MiddlewareInterface
     public function push(Header $header): void
     {
         $this->headers[] = $header;
+    }
+
+    public function cookieSetup(): CookieSetup
+    {
+        return new CookieSetup($this);
     }
 }

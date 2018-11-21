@@ -61,25 +61,9 @@ class HeadersContextCookieTest extends TestCase
         $this->assertSame($expected, $this->responseHeader($context));
     }
 
-    public function testRenamingCookie_ReturnsNewInstance()
+    public function testName_ReturnsCookieName()
     {
-        $firstCookie  = $this->cookieSetup($context)->cookie('FirstName');
-        $secondCookie = $firstCookie->withName('SecondName');
-
-        $this->assertNotSame($firstCookie, $secondCookie);
-
-        $firstCookie->send('1');
-        $secondCookie->send('2');
-        $expected = ['FirstName=1; Path=/', 'SecondName=2; Path=/'];
-        $this->assertSame($expected, $this->responseHeader($context));
-    }
-
-    public function testSettingSameName_ReturnsSameInstance()
-    {
-        $firstCookie  = $this->cookieSetup($context)->cookie('FirstName');
-        $secondCookie = $firstCookie->withName('FirstName');
-
-        $this->assertSame($firstCookie, $secondCookie);
+        $this->assertSame('cookieName', $this->cookieSetup($context)->cookie('cookieName')->name());
     }
 
     /**
@@ -139,29 +123,24 @@ class HeadersContextCookieTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidAndValidNames
+     * @dataProvider invalidNames
      *
      * @param string $invalidName
-     * @param string $validName
      */
-    public function testInvalidCharacterInCookieName_ThrowsException(string $invalidName, string $validName)
+    public function testInvalidCharacterInCookieName_ThrowsException(string $invalidName)
     {
-        $cookie = $this->cookieSetup()->cookie($validName);
         $this->expectException(Exception\IllegalCharactersException::class);
-        $cookie->withName($invalidName);
+        $this->cookieSetup()->cookie($invalidName);
     }
 
     /**
-     * @dataProvider invalidAndValidValues
+     * @dataProvider invalidValues
      *
      * @param string $invalidValue
-     * @param string $validValue
      */
-    public function testInvalidCharacterInCookieValue_ThrowsException(string $invalidValue, string $validValue)
+    public function testInvalidCharacterInCookieValue_ThrowsException(string $invalidValue)
     {
-        $cookie = $this->cookieSetup()->cookie('testValid');
-        $cookie->send($validValue);
-        $cookie = $cookie->withName('testInvalid');
+        $cookie = $this->cookieSetup()->cookie('testValue');
         $this->expectException(Exception\IllegalCharactersException::class);
         $cookie->send($invalidValue);
     }
@@ -205,14 +184,14 @@ class HeadersContextCookieTest extends TestCase
         ];
     }
 
-    public function invalidAndValidNames(): array
+    public function invalidNames(): array
     {
-        return [['foo=bar', 'foo.bar'], ['gówno', 'g%C3%B3wno'], ['foo{bar}', 'foo|bar|']];
+        return [['foo=bar'], ['żółty'], ['foo{bar}']];
     }
 
-    public function invalidAndValidValues(): array
+    public function invalidValues(): array
     {
-        return [['foo\bar', 'foo=bar'], ['gówno', 'g%C3%B3wno'], ['foo;bar', 'foo(bar)']];
+        return [['foo\bar'], ['żółty'], ['foo;bar']];
     }
 
     private function fixedDate(int $secondsFromNow = 0): DateTime

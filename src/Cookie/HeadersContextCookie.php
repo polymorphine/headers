@@ -34,15 +34,9 @@ class HeadersContextCookie implements Cookie
         $this->headers    = $headers;
     }
 
-    public function withName(string $name): Cookie
+    public function name(): string
     {
-        if ($name === $this->name) { return $this; }
-
-        $cookie = clone $this;
-        $cookie->name = $this->validName($name);
-        $cookie->sent = false;
-
-        return $cookie;
+        return $this->name;
     }
 
     public function send(string $value): void

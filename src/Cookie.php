@@ -20,21 +20,7 @@ interface Cookie
     const NAME_EXTRA_CHARS  = '!\#$%&\'*+\-.^_`|~';
     const VALUE_EXTRA_CHARS = self::NAME_EXTRA_CHARS . '\/:=?\@()[\]{}<>';
 
-    /**
-     * Creates new Cookie instance with given name and directives
-     * copied from this object.
-     *
-     * NOTE: Cookie name determines its entity, so if instance
-     * name is the same as given parameter same object MUST be
-     * returned.
-     *
-     * @param string $name
-     *
-     * @throws IllegalCharactersException
-     *
-     * @return Cookie
-     */
-    public function withName(string $name): Cookie;
+    public function name(): string;
 
     /**
      * Sends header with server response that orders given

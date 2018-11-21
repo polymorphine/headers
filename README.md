@@ -30,19 +30,15 @@
 
        $cookie = $cookieSetup->cookie('MyCookie');
 
-   Although its value is not sent within `Set-Cookie` header `Cookie` object is immutable.
-   However, it is possible to create cookie with another name and the same set of attributes
-   with `Cookie::withName()` method:
-   
-       $badCookie = $cookie->withName('BadCookie');
-
-3. Send value or order to remove cookie:
+3. Send value:
 
        $cookie->send('value');
-       $badCookie->revoke();
+       
+   or order to revoke cookie, so that it should not be sent with future requests:   
+       
+       $cookie->revoke();
 
    Each cookie can send/revoke header only once
-       
 
 ### Directives and Attributes
 
@@ -50,7 +46,7 @@ Directives are used according to [RFC6265](https://tools.ietf.org/html/rfc6265#s
 section about Set-Cookie header attributes (except relatively new `SameSite` directive). Their
 description might also be found at [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie).
 Concise description with additional class logic is explained in docBlocks of mutator methods
-of [`CookieSetup`](src/CookieSetup.php) class.
+of [`CookieSetup`](src/Cookie/CookieSetup.php) class.
 
 Here are some class-specific rules for setting those directives:
 * Empty values and root path (`/`) might be omitted as they're same as default.

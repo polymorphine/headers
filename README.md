@@ -11,12 +11,19 @@
 ### Basic usage
 ##### *Set-Cookie header*
 
-1. Instantiate a cookie setup using `ResponseHeaders` context and configure with array
-   of directives/attributes (or builder methods) when their value needs to be specified
-   (see [`directives()`](/src/Cookie/CookieSetup.php#L48) method):
+1. Instantiate a cookie builder using `ResponseHeaders` context:
 
-       $context = new ResponseHeaders();
-       $cookieSetup = $context->directives([
+       $headers     = new ResponseHeaders();
+       $cookieSetup = new CookieSetup($headers);
+   
+   Alternatively, instantiating `CookieSetup` is possible with `ResponseHeaders` method:
+   
+       $cookieSetup = $context->cookieSetup();
+
+2. Configure cookie with array of its directives/attributes
+   (see [`CookieSetup::directives()`](/src/Cookie/CookieSetup.php#L48) method):
+
+       $cookieSetup->directives([
            'Domain'   => 'example.com',
            'Path'     => '/admin',
            'Expires'  => new DateTime(...),
@@ -26,13 +33,21 @@
            'SameSite' => 'Strict'
        ]);
 
-   Modifying setup object is possible with its mutator methods.
+   Modifying setup object is also possible with its builder methods:
 
-2. Instantiate [`Cookie`](/src/Cookie.php) type object with its name:
+       $cookieSetup->domain('example.com')
+                   ->path('/admin')
+                   ->expires(new DateTime(...))
+                   ->maxAge(1234)
+                   ->secure()
+                   ->httpOnly()
+                   ->sameSite('Strict');
+
+3. Instantiate [`Cookie`](/src/Cookie.php) type object with its name:
 
        $cookie = $cookieSetup->cookie('MyCookie');
 
-3. Send value:
+4. Send value:
 
        $cookie->send('value');
        

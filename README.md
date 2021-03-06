@@ -1,8 +1,9 @@
 # Polymorphine/Headers
-[![Build Status](https://travis-ci.org/shudd3r/polymorphine-headers.svg?branch=develop)](https://travis-ci.org/shudd3r/polymorphine-headers)
-[![Coverage Status](https://coveralls.io/repos/github/shudd3r/polymorphine-headers/badge.svg?branch=develop)](https://coveralls.io/github/shudd3r/polymorphine-headers?branch=develop)
-[![PHP from Packagist](https://img.shields.io/packagist/php-v/polymorphine/headers/dev-develop.svg)](https://packagist.org/packages/polymorphine/headers)
-[![Packagist](https://img.shields.io/packagist/l/polymorphine/headers.svg)](https://packagist.org/packages/polymorphine/headers)
+[![Latest Stable Version](https://poser.pugx.org/polymorphine/headers/version)](https://packagist.org/packages/polymorphine/headers)
+[![Build status](https://github.com/polymorphine/headers/workflows/build/badge.svg)](https://github.com/polymorphine/headers/actions)
+[![Coverage status](https://coveralls.io/repos/github/polymorphine/headers/badge.svg?branch=develop)](https://coveralls.io/github/polymorphine/headers?branch=develop)
+[![PHP version](https://img.shields.io/packagist/php-v/polymorphine/headers.svg)](https://packagist.org/packages/polymorphine/headers)
+[![LICENSE](https://img.shields.io/github/license/polymorphine/headers.svg?color=blue)](LICENSE)
 ### HTTP Response headers middleware
 
 ### Installation with [Composer](https://getcomposer.org/)

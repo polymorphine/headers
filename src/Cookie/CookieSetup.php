@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Polymorphine/Headers package.
@@ -57,7 +57,7 @@ class CookieSetup
             'MaxAge'   => null,
             'Secure'   => false,
             'HttpOnly' => false,
-            'SameSite' => false
+            'SameSite' => null
         ];
 
         foreach (HeadersContextCookie::DIRECTIVE_NAMES as $name) {

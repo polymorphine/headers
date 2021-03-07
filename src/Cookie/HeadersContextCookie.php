@@ -27,6 +27,11 @@ class HeadersContextCookie implements Cookie
 
     private $sent = false;
 
+    /**
+     * @param string          $name
+     * @param array           $directives
+     * @param ResponseHeaders $headers
+     */
     public function __construct(string $name, array $directives, ResponseHeaders $headers)
     {
         $this->name       = $this->validName($name);

@@ -39,11 +39,22 @@ final class ResponseHeaders implements MiddlewareInterface
         return $response;
     }
 
+    /**
+     * Adds Header that will modify server Response.
+     *
+     * @param Header $header
+     */
     public function push(Header $header): void
     {
         $this->headers[] = $header;
     }
 
+    /**
+     * CookieSetup object can be used to configure Cookie header
+     * in server Response.
+     *
+     * @return CookieSetup
+     */
     public function cookieSetup(): CookieSetup
     {
         return new CookieSetup($this);

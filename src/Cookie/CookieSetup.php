@@ -23,6 +23,9 @@ class CookieSetup
     private $responseHeaders;
     private $directives;
 
+    /**
+     * @param ResponseHeaders $responseHeaders
+     */
     public function __construct(ResponseHeaders $responseHeaders)
     {
         $this->responseHeaders = $responseHeaders;

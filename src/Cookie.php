@@ -20,6 +20,9 @@ interface Cookie
     const NAME_EXTRA_CHARS  = '!\#$%&\'*+\-.^_`|~';
     const VALUE_EXTRA_CHARS = self::NAME_EXTRA_CHARS . '\/:=?\@()[\]{}<>';
 
+    /**
+     * @return string
+     */
     public function name(): string;
 
     /**

@@ -33,7 +33,8 @@ class HeadersContextCookieTest extends TestCase
 
     public function testStandardSetup()
     {
-        $this->cookieSetup($context)->directives(['Expires' => $this->fixedDate(7200)])
+        $this->cookieSetup($context)
+             ->directives(['Expires' => $this->fixedDate(7200)])
              ->cookie('name')
              ->send('value');
 

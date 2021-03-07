@@ -19,6 +19,9 @@ class SetCookieHeader implements Header
 {
     private $header;
 
+    /**
+     * @param string $header
+     */
     public function __construct(string $header)
     {
         $this->header = $header;

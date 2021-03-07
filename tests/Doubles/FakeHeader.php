@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Polymorphine/Headers package.
@@ -17,8 +17,8 @@ use Psr\Http\Message\MessageInterface;
 
 class FakeHeader implements Header
 {
-    private $name;
-    private $value;
+    private string $name;
+    private string $value;
 
     public function __construct(string $name, string $value)
     {

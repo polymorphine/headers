@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Polymorphine/Headers package.
@@ -12,13 +12,9 @@
 namespace Polymorphine\Headers\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Polymorphine\Headers\Cookie\CookieSetup;
 use Polymorphine\Headers\ResponseHeaders;
+use Polymorphine\Headers\Cookie\CookieSetup;
 use Polymorphine\Headers\Header;
-use Polymorphine\Headers\Tests\Doubles\FakeHeader;
-use Polymorphine\Headers\Tests\Doubles\FakeRequestHandler;
-use Polymorphine\Headers\Tests\Doubles\FakeServerRequest;
-use Polymorphine\Headers\Tests\Doubles\FakeResponse;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -32,8 +28,8 @@ class ResponseHeadersTest extends TestCase
 
     public function testAddHeaders()
     {
-        $headers = $this->middleware(new FakeHeader('Set-Cookie', 'default=value'));
-        $headers->push(new FakeHeader('Set-Cookie', 'name=value'));
+        $headers = $this->middleware(new Doubles\FakeHeader('Set-Cookie', 'default=value'));
+        $headers->push(new Doubles\FakeHeader('Set-Cookie', 'name=value'));
         $this->assertSame(['Set-Cookie' => ['default=value', 'name=value']], $this->response($headers)->getHeaders());
     }
 
@@ -42,13 +38,14 @@ class ResponseHeadersTest extends TestCase
         $this->assertInstanceOf(CookieSetup::class, $this->middleware()->cookieSetup());
     }
 
-    private function middleware(Header ...$headers)
+    private function middleware(Header ...$headers): ResponseHeaders
     {
         return new ResponseHeaders(...$headers);
     }
 
     private function response(MiddlewareInterface $headers): ResponseInterface
     {
-        return $headers->process(new FakeServerRequest(), new FakeRequestHandler(new FakeResponse()));
+        $handler = new Doubles\FakeRequestHandler(new Doubles\FakeResponse());
+        return $headers->process(new Doubles\DummyServerRequest(), $handler);
     }
 }

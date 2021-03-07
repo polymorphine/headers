@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Polymorphine/Headers package.
@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 
 final class ResponseHeaders implements MiddlewareInterface
 {
-    private $headers = [];
+    private array $headers;
 
     /**
      * @param Header[] $headers
@@ -39,11 +39,22 @@ final class ResponseHeaders implements MiddlewareInterface
         return $response;
     }
 
+    /**
+     * Adds Header that will modify server Response.
+     *
+     * @param Header $header
+     */
     public function push(Header $header): void
     {
         $this->headers[] = $header;
     }
 
+    /**
+     * CookieSetup object can be used to configure Cookie header
+     * in server Response.
+     *
+     * @return CookieSetup
+     */
     public function cookieSetup(): CookieSetup
     {
         return new CookieSetup($this);

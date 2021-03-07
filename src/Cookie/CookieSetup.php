@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Polymorphine/Headers package.
@@ -20,9 +20,12 @@ class CookieSetup
 {
     private const FIVE_YEARS_IN_SEC = 157680000;
 
-    private $responseHeaders;
-    private $directives;
+    private ResponseHeaders $responseHeaders;
+    private array           $directives;
 
+    /**
+     * @param ResponseHeaders $responseHeaders
+     */
     public function __construct(ResponseHeaders $responseHeaders)
     {
         $this->responseHeaders = $responseHeaders;
@@ -54,7 +57,7 @@ class CookieSetup
             'MaxAge'   => null,
             'Secure'   => false,
             'HttpOnly' => false,
-            'SameSite' => false
+            'SameSite' => null
         ];
 
         foreach (HeadersContextCookie::DIRECTIVE_NAMES as $name) {
@@ -93,7 +96,7 @@ class CookieSetup
      *
      * @return Cookie
      */
-    public function permanentCookie($name): Cookie
+    public function permanentCookie(string $name): Cookie
     {
         $this->maxAge(self::FIVE_YEARS_IN_SEC);
         return $this->cookie($name);
@@ -108,7 +111,7 @@ class CookieSetup
      *
      * @return Cookie
      */
-    public function sessionCookie($name): Cookie
+    public function sessionCookie(string $name): Cookie
     {
         $this->httpOnly();
         $this->sameSite('Lax');

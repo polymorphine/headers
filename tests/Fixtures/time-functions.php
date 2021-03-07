@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Polymorphine/Headers package.
@@ -11,7 +11,7 @@
 
 namespace Polymorphine\Headers\Cookie;
 
-function time()
+function time(): int
 {
     return 1525132800;
 }

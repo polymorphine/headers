@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Polymorphine/Headers package.
@@ -33,7 +33,8 @@ class HeadersContextCookieTest extends TestCase
 
     public function testStandardSetup()
     {
-        $this->cookieSetup($context)->directives(['Expires' => $this->fixedDate(7200)])
+        $this->cookieSetup($context)
+             ->expires($this->fixedDate(7200))
              ->cookie('name')
              ->send('value');
 
@@ -159,7 +160,7 @@ class HeadersContextCookieTest extends TestCase
         $cookie->send('value');
     }
 
-    public function cookieData()
+    public function cookieData(): array
     {
         return [
             ['myCookie=; Path=/; Expires=Thursday, 01-Jan-1970 00:00:00 UTC; MaxAge=-1525132800', [
@@ -174,7 +175,7 @@ class HeadersContextCookieTest extends TestCase
                 'HttpOnly' => true,
                 'Domain'   => 'example.com',
                 'Path'     => '/directory/',
-                'SameSite' => true
+                'SameSite' => 'Lax'
             ]],
             ['fullCookie=foo; Domain=example.com; Path=/directory/; Expires=Tuesday, 01-May-2018 01:00:00 UTC; MaxAge=3600; Secure; HttpOnly; SameSite=Lax', [
                 'name'     => 'fullCookie',
@@ -184,7 +185,7 @@ class HeadersContextCookieTest extends TestCase
                 'HttpOnly' => true,
                 'Domain'   => 'example.com',
                 'Path'     => '/directory/',
-                'SameSite' => true
+                'SameSite' => 'Lax'
             ]]
         ];
     }
@@ -201,7 +202,8 @@ class HeadersContextCookieTest extends TestCase
 
     private function fixedDate(int $secondsFromNow = 0): DateTime
     {
-        return (new DateTime())->setTimestamp(\Polymorphine\Headers\Cookie\time() + $secondsFromNow);
+        $date = new DateTime();
+        return $date->setTimestamp(\Polymorphine\Headers\Cookie\time() + $secondsFromNow);
     }
 
     private function cookieSetup(&$context = null): CookieSetup
@@ -212,7 +214,7 @@ class HeadersContextCookieTest extends TestCase
 
     private function responseHeader(ResponseHeaders $context): array
     {
-        $request = new Doubles\FakeServerRequest();
+        $request = new Doubles\DummyServerRequest();
         $handler = new Doubles\FakeRequestHandler(new Doubles\FakeResponse());
 
         return $context->process($request, $handler)->getHeader('Set-Cookie');

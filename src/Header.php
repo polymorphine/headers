@@ -16,5 +16,10 @@ use Psr\Http\Message\MessageInterface;
 
 interface Header
 {
+    /**
+     * @param MessageInterface $message
+     *
+     * @return MessageInterface New Message instance with modified headers
+     */
     public function addToMessage(MessageInterface $message): MessageInterface;
 }

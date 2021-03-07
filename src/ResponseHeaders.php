@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 
 final class ResponseHeaders implements MiddlewareInterface
 {
-    private $headers = [];
+    private array $headers;
 
     /**
      * @param Header[] $headers

@@ -11,7 +11,7 @@
 
 namespace Polymorphine\Headers\Cookie;
 
-function time()
+function time(): int
 {
     return 1525132800;
 }

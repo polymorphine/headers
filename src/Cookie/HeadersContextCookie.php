@@ -21,11 +21,11 @@ class HeadersContextCookie implements Cookie
 {
     const DIRECTIVE_NAMES = ['Domain', 'Path', 'Expires', 'MaxAge', 'Secure', 'HttpOnly', 'SameSite'];
 
-    private $name;
-    private $directives;
-    private $headers;
+    private string          $name;
+    private array           $directives;
+    private ResponseHeaders $headers;
 
-    private $sent = false;
+    private bool $sent = false;
 
     /**
      * @param string          $name

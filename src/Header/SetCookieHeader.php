@@ -17,18 +17,18 @@ use Psr\Http\Message\MessageInterface;
 
 class SetCookieHeader implements Header
 {
-    private $header;
+    private string $headerValue;
 
     /**
-     * @param string $header
+     * @param string $headerValue
      */
-    public function __construct(string $header)
+    public function __construct(string $headerValue)
     {
-        $this->header = $header;
+        $this->headerValue = $headerValue;
     }
 
     public function addToMessage(MessageInterface $message): MessageInterface
     {
-        return $message->withAddedHeader('Set-Cookie', $this->header);
+        return $message->withAddedHeader('Set-Cookie', $this->headerValue);
     }
 }

@@ -17,8 +17,8 @@ use Polymorphine\Headers\Cookie\Exception\IllegalCharactersException;
 
 interface Cookie
 {
-    const NAME_EXTRA_CHARS  = '!\#$%&\'*+\-.^_`|~';
-    const VALUE_EXTRA_CHARS = self::NAME_EXTRA_CHARS . '\/:=?\@()[\]{}<>';
+    public const NAME_EXTRA_CHARS  = '!\#$%&\'*+\-.^_`|~';
+    public const VALUE_EXTRA_CHARS = self::NAME_EXTRA_CHARS . '\/:=?\@()[\]{}<>';
 
     /**
      * @return string

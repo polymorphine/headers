@@ -19,7 +19,7 @@ use DateTime;
 
 class HeadersContextCookie implements Cookie
 {
-    const DIRECTIVE_NAMES = ['Domain', 'Path', 'Expires', 'MaxAge', 'Secure', 'HttpOnly', 'SameSite'];
+    public const DIRECTIVE_NAMES = ['Domain', 'Path', 'Expires', 'MaxAge', 'Secure', 'HttpOnly', 'SameSite'];
 
     private string          $name;
     private array           $directives;

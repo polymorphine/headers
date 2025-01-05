@@ -17,11 +17,12 @@ use Psr\Http\Message\StreamInterface;
 
 class FakeResponse implements ResponseInterface
 {
-    public string $body;
-    public array  $headers = [];
-    public string $protocol = '1.1';
-    public int    $status   = 200;
-    public string $reason   = 'OK';
+    public string          $body;
+    public array           $headers = [];
+    public string          $protocol = '1.1';
+    public int             $status   = 200;
+    public string          $reason   = 'OK';
+    public StreamInterface $dummyStream;
 
     public function __construct(string $body = '')
     {
@@ -79,7 +80,7 @@ class FakeResponse implements ResponseInterface
 
     public function getBody(): StreamInterface
     {
-        return new DummyStream();
+        return $this->dummyStream;
     }
 
     public function withBody(StreamInterface $body): self

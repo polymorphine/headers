@@ -18,9 +18,10 @@ use Psr\Http\Message\UriInterface;
 
 class DummyServerRequest implements ServerRequestInterface
 {
-    public ?UriInterface $uri;
+    public ?UriInterface   $uri;
+    public StreamInterface $dummyStream;
 
-    public function __construct(UriInterface $uri = null)
+    public function __construct(?UriInterface $uri = null)
     {
         $this->uri = $uri;
     }
@@ -87,7 +88,7 @@ class DummyServerRequest implements ServerRequestInterface
 
     public function getBody(): StreamInterface
     {
-        return new DummyStream();
+        return $this->dummyStream;
     }
 
     public function withBody(StreamInterface $body): self

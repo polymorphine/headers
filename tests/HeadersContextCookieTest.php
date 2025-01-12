@@ -35,10 +35,11 @@ class HeadersContextCookieTest extends TestCase
     {
         $this->cookieSetup($context)
              ->expires($this->fixedDate(7200))
+             ->secure()
              ->cookie('name')
              ->send('value');
 
-        $expected = ['name=value; Path=/; Expires=Tuesday, 01-May-2018 02:00:00 UTC; MaxAge=7200'];
+        $expected = ['name=value; Path=/; Expires=Tuesday, 01-May-2018 02:00:00 UTC; MaxAge=7200; Secure'];
         $this->assertSame($expected, $this->responseHeader($context));
     }
 

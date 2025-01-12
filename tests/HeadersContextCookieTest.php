@@ -206,10 +206,9 @@ class HeadersContextCookieTest extends TestCase
         return $date->setTimestamp(\Polymorphine\Headers\Cookie\time() + $secondsFromNow);
     }
 
-    private function cookieSetup(&$context = null): CookieSetup
+    private function cookieSetup(?ResponseHeaders &$context = null): CookieSetup
     {
-        $context or $context = new ResponseHeaders();
-        return new CookieSetup($context);
+        return new CookieSetup($context ??= new ResponseHeaders());
     }
 
     private function responseHeader(ResponseHeaders $context): array

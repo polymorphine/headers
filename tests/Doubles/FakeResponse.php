@@ -89,7 +89,7 @@ class FakeResponse implements ResponseInterface
         return $this;
     }
 
-    public function getStatusCode(): ?int
+    public function getStatusCode(): int
     {
         return $this->status;
     }

@@ -16,7 +16,7 @@ use Polymorphine\Headers\Cookie\HeadersContextCookie;
 use Polymorphine\Headers\Cookie\CookieSetup;
 use Polymorphine\Headers\Cookie\Exception;
 use Polymorphine\Headers\ResponseHeaders;
-use DateTime;
+use Polymorphine\Headers\Tests\Fixtures\FixedDateTime;
 
 require_once __DIR__ . '/Fixtures/time-functions.php';
 
@@ -34,7 +34,7 @@ class HeadersContextCookieTest extends TestCase
     public function test_StandardSetup()
     {
         $this->cookieSetup($context)
-             ->expires($this->fixedDate(7200))
+             ->expires(FixedDateTime::withOffset(7200))
              ->secure()
              ->cookie('name')
              ->send('value');
@@ -46,7 +46,7 @@ class HeadersContextCookieTest extends TestCase
     public function test_PermanentSetup()
     {
         $this->cookieSetup($context)
-             ->directives(['Expires' => $this->fixedDate(7200)])
+             ->directives(['Expires' => FixedDateTime::withOffset(7200)])
              ->permanentCookie('name')
              ->send('value');
 
@@ -99,7 +99,7 @@ class HeadersContextCookieTest extends TestCase
     public function test_GivenBothExpiryDirectivesToSetupConstructor_FirstOneIsOverwritten()
     {
         $this->cookieSetup($context)
-             ->directives(['Expires' => $this->fixedDate(3600), 'MaxAge' => 100])
+             ->directives(['Expires' => FixedDateTime::withOffset(3600), 'MaxAge' => 100])
              ->cookie('name')
              ->send('value');
 
@@ -182,7 +182,7 @@ class HeadersContextCookieTest extends TestCase
                 'name'     => 'fullCookie',
                 'value'    => 'foo',
                 'Secure'   => true,
-                'Expires'  => $this->fixedDate(3600),
+                'Expires'  => FixedDateTime::withOffset(3600),
                 'HttpOnly' => true,
                 'Domain'   => 'example.com',
                 'Path'     => '/directory/',
@@ -199,12 +199,6 @@ class HeadersContextCookieTest extends TestCase
     public function invalidValues(): array
     {
         return [['foo\bar'], ['żółty'], ['foo;bar']];
-    }
-
-    private function fixedDate(int $secondsFromNow = 0): DateTime
-    {
-        $date = new DateTime();
-        return $date->setTimestamp(\Polymorphine\Headers\Cookie\time() + $secondsFromNow);
     }
 
     private function cookieSetup(?ResponseHeaders &$context = null): CookieSetup

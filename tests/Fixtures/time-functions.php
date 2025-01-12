@@ -11,7 +11,9 @@
 
 namespace Polymorphine\Headers\Cookie;
 
+use Polymorphine\Headers\Tests\Fixtures\FixedDateTime;
+
 function time(): int
 {
-    return 1525132800;
+    return FixedDateTime::TIMESTAMP;
 }

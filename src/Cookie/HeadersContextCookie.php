@@ -14,6 +14,7 @@ namespace Polymorphine\Headers\Cookie;
 use Polymorphine\Headers\Cookie;
 use Polymorphine\Headers\ResponseHeaders;
 use Polymorphine\Headers\Header\SetCookieHeader;
+use DateTimeInterface;
 use DateTime;
 
 
@@ -81,7 +82,7 @@ class HeadersContextCookie implements Cookie
         if (!isset($this->directives['Expires'])) { return; }
 
         $expires = $this->directives['Expires'];
-        $this->directives['Expires'] = $expires->format(DateTime::COOKIE);
+        $this->directives['Expires'] = $expires->format(DateTimeInterface::COOKIE);
         $this->directives['MaxAge']  = $expires->getTimestamp() - time();
     }
 

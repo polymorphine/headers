@@ -23,6 +23,46 @@ require_once __DIR__ . '/Fixtures/time-functions.php';
 
 class HeadersContextCookieTest extends TestCase
 {
+    public static function cookieData(): iterable
+    {
+        return [
+            ['myCookie=; Path=/; Expires=Thursday, 01-Jan-1970 00:00:00 UTC; MaxAge=-1525132800', [
+                'name'  => 'myCookie',
+                'value' => null
+            ]],
+            ['fullCookie=foo; Domain=example.com; Path=/directory/; Expires=Tuesday, 01-May-2018 01:00:00 UTC; MaxAge=3600; Secure; HttpOnly; SameSite=Lax', [
+                'name'     => 'fullCookie',
+                'value'    => 'foo',
+                'Secure'   => true,
+                'MaxAge'   => 3600,
+                'HttpOnly' => true,
+                'Domain'   => 'example.com',
+                'Path'     => '/directory/',
+                'SameSite' => 'Lax'
+            ]],
+            ['fullCookie=foo; Domain=example.com; Path=/directory/; Expires=Tuesday, 01-May-2018 01:00:00 UTC; MaxAge=3600; Secure; HttpOnly; SameSite=Lax', [
+                'name'     => 'fullCookie',
+                'value'    => 'foo',
+                'Secure'   => true,
+                'Expires'  => FixedDateTime::withOffset(3600),
+                'HttpOnly' => true,
+                'Domain'   => 'example.com',
+                'Path'     => '/directory/',
+                'SameSite' => 'Lax'
+            ]]
+        ];
+    }
+
+    public static function invalidNames(): iterable
+    {
+        return [['foo=bar'], ['żółty'], ['foo{bar}']];
+    }
+
+    public static function invalidValues(): iterable
+    {
+        return [['foo\bar'], ['żółty'], ['foo;bar']];
+    }
+
     public function test_Instantiation()
     {
         $this->assertInstanceOf(CookieSetup::class, $setup = $this->cookieSetup());
@@ -69,12 +109,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertSame('cookieName', $this->cookieSetup($context)->cookie('cookieName')->name());
     }
 
-    /**
-     * @dataProvider cookieData
-     *
-     * @param string $expectedHeader
-     * @param array  $data
-     */
+    /** @dataProvider cookieData */
     public function test_ConstructorDirectivesSetting(string $expectedHeader, array $data)
     {
         $cookie = $this->cookieSetup($context)
@@ -129,22 +164,14 @@ class HeadersContextCookieTest extends TestCase
         $this->assertEquals($expected, $this->responseHeader($context));
     }
 
-    /**
-     * @dataProvider invalidNames
-     *
-     * @param string $invalidName
-     */
+    /** @dataProvider invalidNames */
     public function test_InvalidCharacterInCookieName_ThrowsException(string $invalidName)
     {
         $this->expectException(Exception\IllegalCharactersException::class);
         $this->cookieSetup()->cookie($invalidName);
     }
 
-    /**
-     * @dataProvider invalidValues
-     *
-     * @param string $invalidValue
-     */
+    /** @dataProvider invalidValues */
     public function test_InvalidCharacterInCookieValue_ThrowsException(string $invalidValue)
     {
         $cookie = $this->cookieSetup()->cookie('testValue');
@@ -159,46 +186,6 @@ class HeadersContextCookieTest extends TestCase
         $cookie->send('value');
         $this->expectException(Exception\CookieAlreadySentException::class);
         $cookie->send('value');
-    }
-
-    public function cookieData(): array
-    {
-        return [
-            ['myCookie=; Path=/; Expires=Thursday, 01-Jan-1970 00:00:00 UTC; MaxAge=-1525132800', [
-                'name'  => 'myCookie',
-                'value' => null
-            ]],
-            ['fullCookie=foo; Domain=example.com; Path=/directory/; Expires=Tuesday, 01-May-2018 01:00:00 UTC; MaxAge=3600; Secure; HttpOnly; SameSite=Lax', [
-                'name'     => 'fullCookie',
-                'value'    => 'foo',
-                'Secure'   => true,
-                'MaxAge'   => 3600,
-                'HttpOnly' => true,
-                'Domain'   => 'example.com',
-                'Path'     => '/directory/',
-                'SameSite' => 'Lax'
-            ]],
-            ['fullCookie=foo; Domain=example.com; Path=/directory/; Expires=Tuesday, 01-May-2018 01:00:00 UTC; MaxAge=3600; Secure; HttpOnly; SameSite=Lax', [
-                'name'     => 'fullCookie',
-                'value'    => 'foo',
-                'Secure'   => true,
-                'Expires'  => FixedDateTime::withOffset(3600),
-                'HttpOnly' => true,
-                'Domain'   => 'example.com',
-                'Path'     => '/directory/',
-                'SameSite' => 'Lax'
-            ]]
-        ];
-    }
-
-    public function invalidNames(): array
-    {
-        return [['foo=bar'], ['żółty'], ['foo{bar}']];
-    }
-
-    public function invalidValues(): array
-    {
-        return [['foo\bar'], ['żółty'], ['foo;bar']];
     }
 
     private function cookieSetup(?ResponseHeaders &$context = null): CookieSetup

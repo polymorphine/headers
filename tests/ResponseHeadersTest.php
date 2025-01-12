@@ -21,19 +21,19 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResponseHeadersTest extends TestCase
 {
-    public function testInstantiation()
+    public function test_Instantiation()
     {
         $this->assertInstanceOf(ResponseHeaders::class, $this->middleware());
     }
 
-    public function testAddHeaders()
+    public function test_AddHeaders()
     {
         $headers = $this->middleware(new Doubles\FakeHeader('Set-Cookie', 'default=value'));
         $headers->push(new Doubles\FakeHeader('Set-Cookie', 'name=value'));
         $this->assertSame(['Set-Cookie' => ['default=value', 'name=value']], $this->response($headers)->getHeaders());
     }
 
-    public function testCookieSetup()
+    public function test_CookieSetup()
     {
         $this->assertInstanceOf(CookieSetup::class, $this->middleware()->cookieSetup());
     }

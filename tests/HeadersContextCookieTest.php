@@ -23,7 +23,7 @@ require_once __DIR__ . '/Fixtures/time-functions.php';
 
 class HeadersContextCookieTest extends TestCase
 {
-    public function testInstantiation()
+    public function test_Instantiation()
     {
         $this->assertInstanceOf(CookieSetup::class, $setup = $this->cookieSetup());
         $this->assertInstanceOf(HeadersContextCookie::class, $setup->cookie('new'));
@@ -31,7 +31,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertInstanceOf(HeadersContextCookie::class, $setup->sessionCookie('new'));
     }
 
-    public function testStandardSetup()
+    public function test_StandardSetup()
     {
         $this->cookieSetup($context)
              ->expires($this->fixedDate(7200))
@@ -43,7 +43,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertSame($expected, $this->responseHeader($context));
     }
 
-    public function testPermanentSetup()
+    public function test_PermanentSetup()
     {
         $this->cookieSetup($context)
              ->directives(['Expires' => $this->fixedDate(7200)])
@@ -54,7 +54,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertSame($expected, $this->responseHeader($context));
     }
 
-    public function testSessionSetup()
+    public function test_SessionSetup()
     {
         $this->cookieSetup($context)
              ->sessionCookie('SessionId')
@@ -64,7 +64,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertSame($expected, $this->responseHeader($context));
     }
 
-    public function testName_ReturnsCookieName()
+    public function test_Name_ReturnsCookieName()
     {
         $this->assertSame('cookieName', $this->cookieSetup($context)->cookie('cookieName')->name());
     }
@@ -75,7 +75,7 @@ class HeadersContextCookieTest extends TestCase
      * @param string $expectedHeader
      * @param array  $data
      */
-    public function testConstructorDirectivesSetting(string $expectedHeader, array $data)
+    public function test_ConstructorDirectivesSetting(string $expectedHeader, array $data)
     {
         $cookie = $this->cookieSetup($context)
                        ->directives($data)
@@ -84,7 +84,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertEquals([$expectedHeader], $this->responseHeader($context));
     }
 
-    public function testHeadersAreAdded()
+    public function test_HeadersAreAdded()
     {
         $this->cookieSetup($context)
              ->sessionCookie('cookie1')
@@ -96,7 +96,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertCount(2, $this->responseHeader($context));
     }
 
-    public function testGivenBothExpiryDirectivesToSetupConstructor_FirstOneIsOverwritten()
+    public function test_GivenBothExpiryDirectivesToSetupConstructor_FirstOneIsOverwritten()
     {
         $this->cookieSetup($context)
              ->directives(['Expires' => $this->fixedDate(3600), 'MaxAge' => 100])
@@ -107,7 +107,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertSame($expected, $this->responseHeader($context));
     }
 
-    public function testSecureNamePrefix_ForcesSecureDirective()
+    public function test_SecureNamePrefix_ForcesSecureDirective()
     {
         $this->cookieSetup($context)
              ->directives(['Domain' => 'example.com', 'Path' => '/test'])
@@ -118,7 +118,7 @@ class HeadersContextCookieTest extends TestCase
         $this->assertEquals($expected, $this->responseHeader($context));
     }
 
-    public function testHostNamePrefix_ForceSecureRootPathDirectivesWithoutDomain()
+    public function test_HostNamePrefix_ForceSecureRootPathDirectivesWithoutDomain()
     {
         $this->cookieSetup($context)
              ->directives(['Domain' => 'example.com', 'Path' => '/test'])
@@ -134,7 +134,7 @@ class HeadersContextCookieTest extends TestCase
      *
      * @param string $invalidName
      */
-    public function testInvalidCharacterInCookieName_ThrowsException(string $invalidName)
+    public function test_InvalidCharacterInCookieName_ThrowsException(string $invalidName)
     {
         $this->expectException(Exception\IllegalCharactersException::class);
         $this->cookieSetup()->cookie($invalidName);
@@ -145,14 +145,14 @@ class HeadersContextCookieTest extends TestCase
      *
      * @param string $invalidValue
      */
-    public function testInvalidCharacterInCookieValue_ThrowsException(string $invalidValue)
+    public function test_InvalidCharacterInCookieValue_ThrowsException(string $invalidValue)
     {
         $cookie = $this->cookieSetup()->cookie('testValue');
         $this->expectException(Exception\IllegalCharactersException::class);
         $cookie->send($invalidValue);
     }
 
-    public function testGivenCookieWasSent_SendCookie_ThrowsException()
+    public function test_GivenCookieWasSent_SendCookie_ThrowsException()
     {
         $cookie = $this->cookieSetup($context)->cookie('name');
 
